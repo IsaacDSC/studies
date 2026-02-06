@@ -1,0 +1,8 @@
+{
+  "customer": {
+    "country": "US"
+  },
+  "cart": {
+    "total": 1500
+  }
+}

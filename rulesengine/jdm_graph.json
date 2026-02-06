@@ -1,0 +1,59 @@
+{
+  "contentType": "application/vnd.gorules.decision",
+  "nodes": [
+    { "id": "input", "type": "inputNode", "name": "Request", "position": { "x": 0, "y": 0 } },
+    { "id": "output", "type": "outputNode", "name": "Response", "position": { "x": 0, "y": 0 } },
+    {
+      "id": "idade",
+      "type": "decisionTableNode",
+      "name": "Verificar Idade",
+      "position": { "x": 0, "y": 0 },
+      "content": {
+        "hitPolicy": "first",
+        "inputs": [
+          { "id": "idade", "name": "Idade", "field": "idade" }
+        ],
+        "outputs": [
+          { "id": "maiorIdade", "name": "Maior de Idade", "field": "maiorIdade" },
+          { "id": "status", "name": "Status", "field": "statusIdade" }
+        ],
+        "rules": [
+          { "id": "r1", "idade": "< 18", "maiorIdade": "false", "status": "\"menor\"" },
+          { "id": "r2", "idade": ">= 18", "maiorIdade": "true", "status": "\"maior\"" }
+        ]
+      }
+    },
+    {
+      "id": "desconto",
+      "type": "decisionTableNode",
+      "name": "Calcular Desconto",
+      "position": { "x": 0, "y": 0 },
+      "content": {
+        "hitPolicy": "first",
+        "inputs": [
+          { "id": "valor", "name": "Valor", "field": "valor" },
+          { "id": "tipo", "name": "Tipo Cliente", "field": "tipoCliente" }
+        ],
+        "outputs": [
+          { "id": "percentual", "name": "Desconto %", "field": "descontoPercent" },
+          { "id": "valorDesconto", "name": "Valor Desconto", "field": "valorDesconto" },
+          { "id": "valorFinal", "name": "Valor Final", "field": "valorFinal" }
+        ],
+        "rules": [
+          { "id": "r1", "valor": ">= 1000", "tipo": "\"vip\"", "percentual": "20", "valorDesconto": "valor * 0.20", "valorFinal": "valor * 0.80" },
+          { "id": "r2", "valor": ">= 1000", "tipo": "", "percentual": "10", "valorDesconto": "valor * 0.10", "valorFinal": "valor * 0.90" },
+          { "id": "r3", "valor": ">= 500", "tipo": "\"vip\"", "percentual": "15", "valorDesconto": "valor * 0.15", "valorFinal": "valor * 0.85" },
+          { "id": "r4", "valor": ">= 500", "tipo": "", "percentual": "5", "valorDesconto": "valor * 0.05", "valorFinal": "valor * 0.95" },
+          { "id": "r5", "valor": "", "tipo": "\"vip\"", "percentual": "10", "valorDesconto": "valor * 0.10", "valorFinal": "valor * 0.90" },
+          { "id": "r6", "valor": "", "tipo": "", "percentual": "0", "valorDesconto": "0", "valorFinal": "valor" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "sourceId": "input", "targetId": "idade" },
+    { "id": "e2", "sourceId": "input", "targetId": "desconto" },
+    { "id": "e3", "sourceId": "idade", "targetId": "output" },
+    { "id": "e4", "sourceId": "desconto", "targetId": "output" }
+  ]
+}

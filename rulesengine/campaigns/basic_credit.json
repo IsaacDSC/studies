@@ -1,0 +1,110 @@
+{
+  "campaign": "basic_credit",
+  "operations": [
+    "credit"
+  ],
+  "created_at": "2025-12-30T12:17:03.04792Z",
+  "updated_at": "2025-12-30T12:17:03.04792Z",
+  "graph": {
+    "contentType": "application/vnd.gorules.decision",
+    "nodes": [
+      {
+        "id": "input",
+        "type": "inputNode",
+        "name": "Request",
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": "output",
+        "type": "outputNode",
+        "name": "Response",
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": "credit_rules",
+        "type": "decisionTableNode",
+        "name": "Credit Rules",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "content": {
+          "hitPolicy": "first",
+          "inputs": [
+            {
+              "id": "amount",
+              "name": "Amount",
+              "field": "requested_amount"
+            }
+          ],
+          "outputs": [
+            {
+              "id": "approved",
+              "name": "Approved",
+              "field": "approved"
+            },
+            {
+              "id": "rate",
+              "name": "Rate",
+              "field": "rate"
+            },
+            {
+              "id": "installments",
+              "name": "Installments",
+              "field": "installments"
+            },
+            {
+              "id": "value",
+              "name": "Value",
+              "field": "value"
+            }
+          ],
+          "rules": [
+            {
+              "id": "r1",
+              "amount": "\u003c= 100000",
+              "approved": "true",
+              "rate": "1.99",
+              "installments": "[6, 12, 24]",
+              "value": "requested_amount"
+            },
+            {
+              "id": "r2",
+              "amount": "\u003c= 300000",
+              "approved": "true",
+              "rate": "2.49",
+              "installments": "[6, 12]",
+              "value": "requested_amount"
+            },
+            {
+              "id": "r3",
+              "amount": "\u003e 300000",
+              "approved": "false",
+              "rate": "0",
+              "installments": "[]",
+              "value": "0"
+            }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "sourceId": "input",
+        "targetId": "credit_rules"
+      },
+      {
+        "id": "e2",
+        "sourceId": "credit_rules",
+        "targetId": "output"
+      }
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "campaign": "anticipation_standard",
+  "operations": [
+    "anticipation"
+  ],
+  "created_at": "2025-12-30T12:17:28.568126Z",
+  "updated_at": "2025-12-30T12:17:28.568126Z",
+  "graph": {
+    "contentType": "application/vnd.gorules.decision",
+    "nodes": [
+      {
+        "id": "input",
+        "type": "inputNode",
+        "name": "Request",
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": "output",
+        "type": "outputNode",
+        "name": "Response",
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": "anticipation_rules",
+        "type": "decisionTableNode",
+        "name": "Anticipation Rules",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "content": {
+          "hitPolicy": "first",
+          "inputs": [
+            {
+              "id": "amount",
+              "name": "Amount",
+              "field": "requested_amount"
+            }
+          ],
+          "outputs": [
+            {
+              "id": "approved",
+              "name": "Approved",
+              "field": "approved"
+            },
+            {
+              "id": "rate",
+              "name": "Rate",
+              "field": "rate"
+            },
+            {
+              "id": "installments",
+              "name": "Installments",
+              "field": "installments"
+            },
+            {
+              "id": "value",
+              "name": "Value",
+              "field": "value"
+            }
+          ],
+          "rules": [
+            {
+              "id": "r1",
+              "amount": "\u003c= 50000",
+              "approved": "true",
+              "rate": "2.99",
+              "installments": "[1]",
+              "value": "requested_amount"
+            },
+            {
+              "id": "r2",
+              "amount": "\u003c= 150000",
+              "approved": "true",
+              "rate": "3.49",
+              "installments": "[1]",
+              "value": "requested_amount"
+            },
+            {
+              "id": "r3",
+              "amount": "\u003e 150000",
+              "approved": "false",
+              "rate": "0",
+              "installments": "[]",
+              "value": "0"
+            }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "sourceId": "input",
+        "targetId": "anticipation_rules"
+      },
+      {
+        "id": "e2",
+        "sourceId": "anticipation_rules",
+        "targetId": "output"
+      }
+    ]
+  }
+}
