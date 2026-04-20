@@ -19,6 +19,24 @@ func mapStringRule(rule string) string {
 				fail("contains() requires exactly one argument")
 			}
 			return fmt.Sprintf("validate.Contains(%s)", strconv.Quote(args[0]))
+		case "minlen":
+			if len(args) != 1 {
+				fail("minLen() requires exactly one argument")
+			}
+			n, err := strconv.Atoi(args[0])
+			if err != nil {
+				fail("minLen() argument must be integer: %q", args[0])
+			}
+			return fmt.Sprintf("validate.MinLen(%d)", n)
+		case "maxlen":
+			if len(args) != 1 {
+				fail("maxLen() requires exactly one argument")
+			}
+			n, err := strconv.Atoi(args[0])
+			if err != nil {
+				fail("maxLen() argument must be integer: %q", args[0])
+			}
+			return fmt.Sprintf("validate.MaxLen(%d)", n)
 		case "oneof", "possibilities":
 			if len(args) == 0 {
 				fail("%s() requires at least one argument", fn)
@@ -53,4 +71,12 @@ func mapStringRule(rule string) string {
 
 	fail("unsupported string rule %q", rule)
 	return ""
+}
+
+func mapStringPtrRule(rule string) string {
+	r := strings.TrimSpace(rule)
+	if strings.EqualFold(r, "notnil") || strings.EqualFold(r, "nonnil") {
+		return "validate.PtrNotNil()"
+	}
+	return "validate.PtrString(" + mapStringRule(rule) + ")"
 }

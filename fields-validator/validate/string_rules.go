@@ -14,6 +14,36 @@ func ApplyStringRules(field, value string, rules ...StringRule) []FieldError {
 	return errs
 }
 
+type StringPtrRule func(field string, value *string) []FieldError
+
+func ApplyStringPtrRules(field string, value *string, rules ...StringPtrRule) []FieldError {
+	var errs []FieldError
+	for _, rule := range rules {
+		errs = append(errs, rule(field, value)...)
+	}
+	return errs
+}
+
+func PtrNotNil() StringPtrRule {
+	return func(field string, value *string) []FieldError {
+		if value == nil {
+			return []FieldError{{
+				Field: field, Code: "not_nil", Message: "field must not be null", Value: nil,
+			}}
+		}
+		return nil
+	}
+}
+
+func PtrString(rule StringRule) StringPtrRule {
+	return func(field string, value *string) []FieldError {
+		if value == nil {
+			return nil
+		}
+		return rule(field, *value)
+	}
+}
+
 func Required() StringRule {
 	return func(field, value string) []FieldError {
 		if strings.TrimSpace(value) == "" {

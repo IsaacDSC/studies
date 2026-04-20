@@ -56,3 +56,11 @@ func mapFloatRule(rule string) string {
 	}
 	return fmt.Sprintf("validate.MaxFloat(%s)", strconv.FormatFloat(n, 'f', -1, 64))
 }
+
+func mapFloatPtrRule(rule string) string {
+	r := strings.TrimSpace(rule)
+	if strings.EqualFold(r, "notnil") || strings.EqualFold(r, "nonnil") {
+		return "validate.PtrNotNilFloat()"
+	}
+	return "validate.PtrFloat(" + mapFloatRule(rule) + ")"
+}

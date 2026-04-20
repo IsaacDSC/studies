@@ -64,8 +64,9 @@ func parseAnnotatedStruct(path, typeName string) (string, []fieldSpec) {
 					continue
 				}
 				goName := f.Names[0].Name
-				kind := exprName(f.Type)
-				if kind != "string" && kind != "int" && kind != "float64" {
+				kind := exprKind(f.Type)
+				if kind != "string" && kind != "int" && kind != "float64" &&
+					kind != "*string" && kind != "*int" && kind != "*float64" {
 					continue
 				}
 
@@ -91,10 +92,16 @@ func parseAnnotatedStruct(path, typeName string) (string, []fieldSpec) {
 	return file.Name.Name, fields
 }
 
-func exprName(expr ast.Expr) string {
+func exprKind(expr ast.Expr) string {
 	switch t := expr.(type) {
 	case *ast.Ident:
 		return t.Name
+	case *ast.StarExpr:
+		inner := exprKind(t.X)
+		if inner == "" {
+			return ""
+		}
+		return "*" + inner
 	default:
 		return ""
 	}
@@ -180,6 +187,14 @@ func generateCode(pkgName, typeName string, fields []fieldSpec) string {
 				b.WriteString("\t\t" + mapStringRule(r) + ",\n")
 			}
 			b.WriteString("\t)...)\n\n")
+		case "*string":
+			b.WriteString("\terrs = append(errs, validate.ApplyStringPtrRules(\n")
+			b.WriteString("\t\t\"" + f.JSONName + "\",\n")
+			b.WriteString("\t\tin." + f.GoName + ",\n")
+			for _, r := range f.Rules {
+				b.WriteString("\t\t" + mapStringPtrRule(r) + ",\n")
+			}
+			b.WriteString("\t)...)\n\n")
 		case "int":
 			b.WriteString("\terrs = append(errs, validate.ApplyIntRules(\n")
 			b.WriteString("\t\t\"" + f.JSONName + "\",\n")
@@ -188,12 +203,28 @@ func generateCode(pkgName, typeName string, fields []fieldSpec) string {
 				b.WriteString("\t\t" + mapIntRule(r) + ",\n")
 			}
 			b.WriteString("\t)...)\n\n")
+		case "*int":
+			b.WriteString("\terrs = append(errs, validate.ApplyIntPtrRules(\n")
+			b.WriteString("\t\t\"" + f.JSONName + "\",\n")
+			b.WriteString("\t\tin." + f.GoName + ",\n")
+			for _, r := range f.Rules {
+				b.WriteString("\t\t" + mapIntPtrRule(r) + ",\n")
+			}
+			b.WriteString("\t)...)\n\n")
 		case "float64":
 			b.WriteString("\terrs = append(errs, validate.ApplyFloatRules(\n")
 			b.WriteString("\t\t\"" + f.JSONName + "\",\n")
 			b.WriteString("\t\tin." + f.GoName + ",\n")
 			for _, r := range f.Rules {
 				b.WriteString("\t\t" + mapFloatRule(r) + ",\n")
+			}
+			b.WriteString("\t)...)\n\n")
+		case "*float64":
+			b.WriteString("\terrs = append(errs, validate.ApplyFloatPtrRules(\n")
+			b.WriteString("\t\t\"" + f.JSONName + "\",\n")
+			b.WriteString("\t\tin." + f.GoName + ",\n")
+			for _, r := range f.Rules {
+				b.WriteString("\t\t" + mapFloatPtrRule(r) + ",\n")
 			}
 			b.WriteString("\t)...)\n\n")
 		}

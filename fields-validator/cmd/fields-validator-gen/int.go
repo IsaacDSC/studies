@@ -56,3 +56,11 @@ func mapIntRule(rule string) string {
 	}
 	return fmt.Sprintf("validate.Max(%d)", n)
 }
+
+func mapIntPtrRule(rule string) string {
+	r := strings.TrimSpace(rule)
+	if strings.EqualFold(r, "notnil") || strings.EqualFold(r, "nonnil") {
+		return "validate.PtrNotNilInt()"
+	}
+	return "validate.PtrInt(" + mapIntRule(rule) + ")"
+}

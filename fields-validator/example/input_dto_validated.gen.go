@@ -42,5 +42,14 @@ func (in InputDTO) ValidateCollect() validate.Errors {
 		validate.OneOf("PAGAMENTO", "PAGADO", "QUITADO"),
 	)...)
 
+	errs = append(errs, validate.ApplyStringPtrRules(
+		"username",
+		in.Username,
+		validate.PtrNotNil(),
+		validate.PtrString(validate.Required()),
+		validate.PtrString(validate.MinLen(3)),
+		validate.PtrString(validate.MaxLen(20)),
+	)...)
+
 	return errs
 }

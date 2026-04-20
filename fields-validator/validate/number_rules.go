@@ -16,12 +16,72 @@ func ApplyIntRules(field string, value int, rules ...IntRule) []FieldError {
 	return errs
 }
 
+type IntPtrRule func(field string, value *int) []FieldError
+
+func ApplyIntPtrRules(field string, value *int, rules ...IntPtrRule) []FieldError {
+	var errs []FieldError
+	for _, rule := range rules {
+		errs = append(errs, rule(field, value)...)
+	}
+	return errs
+}
+
+func PtrNotNilInt() IntPtrRule {
+	return func(field string, value *int) []FieldError {
+		if value == nil {
+			return []FieldError{{
+				Field: field, Code: "not_nil", Message: "field must not be null", Value: nil,
+			}}
+		}
+		return nil
+	}
+}
+
+func PtrInt(rule IntRule) IntPtrRule {
+	return func(field string, value *int) []FieldError {
+		if value == nil {
+			return nil
+		}
+		return rule(field, *value)
+	}
+}
+
 func ApplyFloatRules(field string, value float64, rules ...FloatRule) []FieldError {
 	var errs []FieldError
 	for _, rule := range rules {
 		errs = append(errs, rule(field, value)...)
 	}
 	return errs
+}
+
+type FloatPtrRule func(field string, value *float64) []FieldError
+
+func ApplyFloatPtrRules(field string, value *float64, rules ...FloatPtrRule) []FieldError {
+	var errs []FieldError
+	for _, rule := range rules {
+		errs = append(errs, rule(field, value)...)
+	}
+	return errs
+}
+
+func PtrNotNilFloat() FloatPtrRule {
+	return func(field string, value *float64) []FieldError {
+		if value == nil {
+			return []FieldError{{
+				Field: field, Code: "not_nil", Message: "field must not be null", Value: nil,
+			}}
+		}
+		return nil
+	}
+}
+
+func PtrFloat(rule FloatRule) FloatPtrRule {
+	return func(field string, value *float64) []FieldError {
+		if value == nil {
+			return nil
+		}
+		return rule(field, *value)
+	}
 }
 
 func Min(min int) IntRule {
