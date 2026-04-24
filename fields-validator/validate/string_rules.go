@@ -2,6 +2,7 @@ package validate
 
 import (
 	"strings"
+	"time"
 )
 
 type StringRule func(field, value string) []FieldError
@@ -124,4 +125,74 @@ func OneOf(options ...string) StringRule {
 		}
 		return nil
 	}
+}
+
+func Date(format string) StringRule {
+	return func(field, value string) []FieldError {
+		layout, ok := parseDateTimeLayout(format, "date")
+		if !ok {
+			return []FieldError{{
+				Field: field, Code: "invalid_rule", Message: "unsupported date format rule", Value: format,
+			}}
+		}
+		if _, err := time.Parse(layout, value); err != nil {
+			return []FieldError{{
+				Field: field, Code: "invalid_format", Message: "invalid date format", Value: value,
+			}}
+		}
+		return nil
+	}
+}
+
+func Time(format string) StringRule {
+	return func(field, value string) []FieldError {
+		layout, ok := parseDateTimeLayout(format, "time")
+		if !ok {
+			return []FieldError{{
+				Field: field, Code: "invalid_rule", Message: "unsupported time format rule", Value: format,
+			}}
+		}
+		if _, err := time.Parse(layout, value); err != nil {
+			return []FieldError{{
+				Field: field, Code: "invalid_format", Message: "invalid time format", Value: value,
+			}}
+		}
+		return nil
+	}
+}
+
+func DateTime(format string) StringRule {
+	return func(field, value string) []FieldError {
+		layout, ok := parseDateTimeLayout(format, "datetime")
+		if !ok {
+			return []FieldError{{
+				Field: field, Code: "invalid_rule", Message: "unsupported datetime format rule", Value: format,
+			}}
+		}
+		if _, err := time.Parse(layout, value); err != nil {
+			return []FieldError{{
+				Field: field, Code: "invalid_format", Message: "invalid datetime format", Value: value,
+			}}
+		}
+		return nil
+	}
+}
+
+func parseDateTimeLayout(format, kind string) (string, bool) {
+	f := strings.TrimSpace(strings.ToUpper(format))
+	switch kind {
+	case "date":
+		if f == "YYYY-MM-DD" {
+			return "2006-01-02", true
+		}
+	case "time":
+		if f == "HH:MM:SS" {
+			return "15:04:05", true
+		}
+	case "datetime":
+		if f == "YYYY-MM-DD HH:MM:SS" {
+			return "2006-01-02 15:04:05", true
+		}
+	}
+	return "", false
 }

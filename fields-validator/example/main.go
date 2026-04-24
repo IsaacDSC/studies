@@ -23,7 +23,10 @@ func corrects() {
 		"status": "PAGAMENTO",
 		"username": "isaac_user",
 		"age2": 18,
-		"age3": 18
+		"age3": 18,
+		"date": "2026-04-24",
+		"time": "10:30:59",
+		"dateTime": "2026-04-24 10:30:59"
 	}`)
 
 	var in InputDTO
@@ -46,7 +49,20 @@ func corrects() {
 }
 
 func wrongs() {
-	payload := []byte(`{"name":"Joao","age":16,"email":"invalid-email","amount":2.4,"status":"PENDENTE"}`)
+	payload := []byte(`{
+		"name": "Joao",
+		"age": 16,
+		"email": "invalid-email",
+		"amount": 2.4,
+		"amount2": 2.4,
+		"status": "PENDENTE",
+		"username": "",
+		"age2": 16,
+		"age3": 16,
+		"date": "24/04/2026",
+		"time": "10:30",
+		"dateTime": "2026-04-24T10:30:59"
+	}`)
 
 	var in InputDTO
 	if err := json.Unmarshal(payload, &in); err != nil {

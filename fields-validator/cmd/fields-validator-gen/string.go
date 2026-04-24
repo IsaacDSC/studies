@@ -9,6 +9,21 @@ import (
 func mapStringRule(rule string) string {
 	if fn, args, ok := parseFunctionRule(rule); ok {
 		switch fn {
+		case "date":
+			if len(args) != 1 {
+				fail("date() requires exactly one argument")
+			}
+			return fmt.Sprintf("validate.Date(%s)", strconv.Quote(args[0]))
+		case "time":
+			if len(args) != 1 {
+				fail("time() requires exactly one argument")
+			}
+			return fmt.Sprintf("validate.Time(%s)", strconv.Quote(args[0]))
+		case "datetime":
+			if len(args) != 1 {
+				fail("dateTime() requires exactly one argument")
+			}
+			return fmt.Sprintf("validate.DateTime(%s)", strconv.Quote(args[0]))
 		case "equals":
 			if len(args) != 1 {
 				fail("equals() requires exactly one argument")

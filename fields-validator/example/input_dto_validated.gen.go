@@ -51,5 +51,23 @@ func (in InputDTO) ValidateCollect() validate.Errors {
 		validate.PtrString(validate.MaxLen(20)),
 	)...)
 
+	errs = append(errs, validate.ApplyStringRules(
+		"date",
+		in.Date,
+		validate.Date("YYYY-MM-DD"),
+	)...)
+
+	errs = append(errs, validate.ApplyStringRules(
+		"time",
+		in.Time,
+		validate.Time("HH:MM:SS"),
+	)...)
+
+	errs = append(errs, validate.ApplyStringRules(
+		"dateTime",
+		in.DateTime,
+		validate.DateTime("YYYY-MM-DD HH:MM:SS"),
+	)...)
+
 	return errs
 }
